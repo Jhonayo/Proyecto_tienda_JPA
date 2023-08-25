@@ -1,6 +1,7 @@
 package com.latam.alura.tienda.prueba;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -13,28 +14,33 @@ import com.latam.alura.tienda.utils.JPAUtils;
 public class RegistroDeProducto {
 
 	public static void main(String[] args) {
-		
-		Categoria celulares = new Categoria("CELULARES");
-
-
+		registrarProducto();
 		EntityManager em = JPAUtils.getEntityManager();
+		ProductoDao productoDao = new ProductoDao(em);
+		Producto producto = productoDao.consultaPorId(1L);
+		System.out.println(producto.getNombre());
+		
+		List<Producto> productos = productoDao.consultaPorNombreDeCategoria("CELULARES");
+		productos.forEach(prod-> System.out.println(prod.getDescripcion()));
 
+	}
+
+	private static void registrarProducto() {
+		Categoria celulares = new Categoria("CELULARES");
+		
+		Producto celular = new Producto("Xiaomi Redmi","Muy Bueno",new BigDecimal("800"), celulares);
+		
+		EntityManager em = JPAUtils.getEntityManager();
+		ProductoDao productoDao = new ProductoDao(em);
+		CategoriaDao categoriaDao = new CategoriaDao(em);
+		
 		em.getTransaction().begin();
 		
-		em.persist(celulares);
+		categoriaDao.guardar(celulares);
+		productoDao.guardar(celular);
 		
-		celulares.setNombre("LIBROS");
-		
-		em.flush();
-		em.clear();
-		
-		celulares = em.merge(celulares);
-		
-		em.remove(celulares);
-		
-		em.flush();
-
-
+		em.getTransaction().commit();
+		em.close();
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.latam.alura.tienda.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import com.latam.alura.tienda.modelo.Producto;
@@ -16,6 +18,23 @@ public class ProductoDao {
 		this.em.persist(producto);
 	}
 	
+	public Producto consultaPorId(Long id) {
+		return em.find(Producto.class, id);
+	}
 	
+	public List<Producto> consultarTodos(){
+		String jpql = "SELECT P FROM Producto AS P";
+		return em.createQuery(jpql,Producto.class).getResultList();
+	}
+	
+	public List<Producto> consultaPorNombre(String nombre){
+		String jpql = "SELECT P FROM Producto AS P WHERE P.nombre=:nombre";
+		return em.createQuery(jpql).setParameter("nombre", nombre).getResultList();
+	}
+	
+	public List<Producto> consultaPorNombreDeCategoria(String nombre){
+		String jpql = "SELECT p FROM Producto AS p WHERE p.categoria.nombre=:nombre";
+		return em.createQuery(jpql).setParameter("nombre", nombre).getResultList();
+	}
 
 }
